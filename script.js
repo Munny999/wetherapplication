@@ -59,5 +59,8 @@ function getWeekDay() {
     ];
     const d = new Date();
     let day = weekday[d.getDay()];
-document.getElementById("weekDay").innerText =day;
-}
+ document.getElementById("searchTxt").addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+        getdata();
+    }
+});
