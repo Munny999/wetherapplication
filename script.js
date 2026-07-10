@@ -1,50 +1,65 @@
 async function getdata() {
- var inputVal =
-document.getElementById("searchTxt").value;
-       const res = await fetch(
-  "https://weatherapi-com.p.rapidapi.com/current.json?q=" + inputVal, {
-    method: "GET",
-    headers: {
-      "x-rapidapi-host": "weatherapi-com.p.rapidapi.com",
-      "x-rapidapi-key": "4f8234a62amsh42185b0b78f249cp12e57ajsnb401d01fcbbf",
-    },
-  }
-);
-   
-    getWeekDay();
-    const data = await res.json();
-document.getElementById("location").innerText =
-data.location.name;
+    const inputVal = document.getElementById("searchTxt").value.trim();
 
-document.getElementById("locationParts").innerHTML =
-"<i class='bi bi-geo-alt'></i> " +
-     data.location.region + " , " +
- data.location.country;
+    if (inputVal === "") {
+        alert("Please enter a city name");
+        return;
+    }
 
-document.getElementById("dateTime").innerHTML =
-"<i class='bi bi-calendar'></i> " +
-        data.location.localtime.substr(0, 10);
+    try {
+        const response = await fetch(
+            "https://weatherapi-com.p.rapidapi.com/current.json?q=" +
+                encodeURIComponent(inputVal),
+            {
+                method: "GET",
+                headers: {
+                    "x-rapidapi-host": "weatherapi-com.p.rapidapi.com",
+                    "x-rapidapi-key": "YOUR_NEW_RAPIDAPI_KEY"
+                }
+            }
+        );
 
-   document.getElementById("txtWord").innerText =
-    data.current.condition.text;
+        if (!response.ok) {
+            throw new Error("Weather data could not be fetched");
+        }
 
-  document.getElementById("humidity").innerText =
-"Humidity: " + data.current.humidity + "%";
+        const data = await response.json();
 
-document.getElementById("precipitation").innerText =
-"Precipitation: " + data.current.precip_mm + "%";
+        document.getElementById("location").innerText =
+            data.location.name;
 
- document.getElementById("wind").innerText =
-  "Wind: " + data.current.wind_kph + "km/h";
+        document.getElementById("locationParts").innerText =
+            data.location.region + ", " + data.location.country;
 
-document.getElementById("temperatureC").innerText=
-data.current.temp_c + "°C";
+        document.getElementById("dateTime").innerText =
+            data.location.localtime;
 
-document.getElementById("temperatureF").innerText=
-data.current.temp_f + " °F";
+        document.getElementById("txtWord").innerText =
+            data.current.condition.text;
 
-   document.getElementById("weatherIcon").src =
-"https:" + data.current.condition.icon;
+        document.getElementById("humidity").innerText =
+            "Humidity: " + data.current.humidity + "%";
+
+        document.getElementById("precipitation").innerText =
+            "Precipitation: " + data.current.precip_mm + " mm";
+
+        document.getElementById("wind").innerText =
+            "Wind Speed: " + data.current.wind_kph + " km/h";
+
+        document.getElementById("temperatureC").innerText =
+            data.current.temp_c + "°C";
+
+        document.getElementById("temperatureF").innerText =
+            data.current.temp_f + "°F";
+
+        document.getElementById("weatherIcon").src =
+            "https:" + data.current.condition.icon;
+
+        getWeekDay();
+    } catch (error) {
+        console.error(error);
+        alert("Unable to fetch weather. Check your API key or city name.");
+    }
 }
 
 function getWeekDay() {
@@ -55,11 +70,14 @@ function getWeekDay() {
         "Wednesday",
         "Thursday",
         "Friday",
-        "Saturday",
+        "Saturday"
     ];
-    const d = new Date();
-    let day = weekday[d.getDay()];
- document.getElementById("searchTxt").addEventListener("keypress", function (event) {
+
+    document.getElementById("weekDay").innerText =
+        weekday[new Date().getDay()];
+}
+
+document.getElementById("searchTxt").addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
         getdata();
     }
